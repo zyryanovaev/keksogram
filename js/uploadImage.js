@@ -1,5 +1,12 @@
 "use strict";
 
+var DEFAULT_COEFFICIENT = 1;
+var pictureScale = {
+  MIN: 25,
+  MAX: 100,
+  STEP: 25,
+};
+
 var uploadFile = document.querySelector("#upload-file");
 var uploadImage = document.querySelector(".img-upload__overlay");
 var uploadCancel = uploadImage.querySelector("#upload-cancel");
@@ -18,8 +25,54 @@ var effectsRadio = uploadImage.querySelector (".effects__radio");
 var effects = uploadImage.querySelector(".img-upload__effects");
 var preview = uploadImage.querySelector(".img-upload__preview");
 
-var currentEffect;
+var currentEffect = document.querySelector("input:checked").id;
 var newEffect;
+
+var onScalePinMouseUp = function () {
+};
+
+var setEffect = function () {
+  var selectedEffect = document.querySelector("input:checked").value;
+  switch (selectedEffect) {
+    case "chrome":
+      newEffect = "effects__preview--chrome";
+      break;
+    case "sepia":
+      newEffect = "effects__preview--sepia";
+      break;
+    case "marvin":
+      newEffect = "effects__preview--marvin";
+      break;
+    case "phobos":
+      newEffect = "effects__preview--phobos";
+      break;
+    case "heat":
+      newEffect = "effects__preview--heat";
+      break;  
+    default:
+      newEffect = "effects__preview--none";
+  };
+  preview.classList.replace(currentEffect, newEffect);
+  newEffect === "effects__preview--none" ? scale.classList.add("hidden") : scale.classList.remove("hidden");
+  currentEffect = newEffect;
+};
+
+var resizeUploadImage = function (newSize) {
+  resizeValue.value = newSize + "%";
+  preview.style.transform = "scale(" + newSize/100 + ")";
+};
+
+var onPlusClick = function () {
+  var size = parseInt(resizeValue.value);
+  if (size < pictureScale.MAX)
+    resizeUploadImage(size + pictureScale.STEP);
+};
+
+var onMinusClick = function () {
+  var size = parseInt(resizeValue.value);
+  if (size > pictureScale.MIN)
+    resizeUploadImage(size - pictureScale.STEP);
+};
 
 var onUploadImageEscPress = function (evt) {
   if (evt.keyCode === 27) {
@@ -27,92 +80,25 @@ var onUploadImageEscPress = function (evt) {
   };
 };
 
-var openUploadImage = function () {
-  uploadImage.classList.remove("hidden");
-  document.addEventListener("keydown", onUploadImageEscPress);
-  effects.addEventListener("click", onEffectCheck);
-  scalePin.addEventListener("mouseup", onScalePinMouseUp);
-  currentEffect = "effects__preview--none";
-};
-
 var cancelUploadImage = function () {
   uploadImage.classList.add("hidden");
   document.removeEventListener("keydown", onUploadImageEscPress);
+  buttonMinus.removeEventListener("click", onMinusClick);
+  buttonPlus.removeEventListener("click", onPlusClick);
   uploadFile.value = "";
-  preview.classList.replace(currentEffect, "effects__preview--none");
-  preview.style.transform = "";
+  preview.style.transform = "scale(" + DEFAULT_COEFFICIENT + ")";
 };
 
-var resizeUploadImage = function (clickedButton) {
-  var size = parseInt(resizeValue.value);
-  clickedButton === "plus" ?
-    size = size <= 75 ? size += 25 : size = 100
-    :size = size >= 50 ? size -= 25 : size = 25;
-  resizeValue.value = size + "%";
-  preview.style.transform = "scale(" + size/100 + ")";
-};
-
-var setEffect = function (coefficient) {
-  switch (currentEffect) {
-    case "effects__preview--chrome":
-      preview.style.filter = "grayscale(" + coefficient * 1 +")";
-      break;
-    case "effects__preview--sepia":
-      preview.style.filter = "sepia(" + coefficient * 1 +")";
-      break;
-    case "effects__preview--marvin":
-      preview.style.filter = "invert(" + coefficient * 100 +"%)";
-      break;
-    case "effects__preview--phobos":
-      preview.style.filter = "blur(" + coefficient * 3 +"px)";
-      break;
-    case "effects__preview--heat":
-      preview.style.filter = "brightness(" + (1 + coefficient * 2) +")";
-      break;  
-  };
-};
-
-var changeMarkupScale = function (coefficient) {
-  var coefficientInPersent = Math.round(coefficient*100);
-  scalePin.style.left = coefficientInPersent + "%";
-  scaleLevel.style.width = coefficientInPersent + "%";
-  scaleValue.value = coefficientInPersent;
-};
-
-var onScalePinMouseUp = function () {
-  var lineLength = scaleLine.offsetWidth;
-  var position = scalePin.offsetLeft;
-  var coefficient = position / lineLength;
-  changeMarkupScale (coefficient);
-  setEffect(coefficient);
-};
-
-var onEffectCheck = function () {
-  var selectedEffect = document.querySelector("input:checked").id;
-  switch (selectedEffect) {
-    case "effect-chrome":
-      newEffect = "effects__preview--chrome";
-      break;
-    case "effect-sepia":
-      newEffect = "effects__preview--sepia";
-      break;
-    case "effect-marvin":
-      newEffect = "effects__preview--marvin";
-      break;
-    case "effect-phobos":
-      newEffect = "effects__preview--phobos";
-      break;
-    case "effect-heat":
-      newEffect = "effects__preview--heat";
-      break;  
-    default:
-      newEffect = "effects__preview--none";
-  };
-  changeMarkupScale (1);
-  preview.style.filter = "";
-  preview.classList.replace(currentEffect, newEffect);
-  newEffect === "effects__preview--none" ? scale.classList.add("hidden") : scale.classList.remove("hidden");
-  currentEffect = newEffect;
+var openUploadImage = function () {
+  uploadImage.classList.remove("hidden");
+  document.addEventListener("keydown", onUploadImageEscPress);
+  buttonMinus.addEventListener("click", onMinusClick);
+  buttonPlus.addEventListener("click", onPlusClick);
+  effects.addEventListener("click", function () {
+    setEffect ();
+  });
+  setEffect ();
+  scalePin.addEventListener("mouseup", onScalePinMouseUp);
 };
 
 uploadFile.addEventListener("change", function () {
@@ -123,9 +109,3 @@ uploadCancel.addEventListener("click", function () {
   cancelUploadImage();
 });
 
-buttonMinus.addEventListener("click", function (){
-  resizeUploadImage("minus");
-});
-buttonPlus.addEventListener("click", function (){
-  resizeUploadImage("plus");
-});

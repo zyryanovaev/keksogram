@@ -96,11 +96,8 @@ var generatePictures = function (countPictures) {
   return photos;
 };
 
-var generateMarkup = function (photos){
-  var pictures = document.createDocumentFragment();
-  for (var i = 0; i < photos.length; i++) {
+var generateMarkup = function (photo){
     var elm = templatePictures.cloneNode(true);
-    var photo = photos[i];
     elm.querySelector(".picture__img").src = photo.url;
     elm.querySelector(".picture__stat--comments").textContent = photo.comments.length;
     elm.querySelector(".picture__stat--likes").textContent = photo.likes;
@@ -108,13 +105,15 @@ var generateMarkup = function (photos){
       openBigPhoto(photo);
       bigPhoto.addEventListener("keydown", onBigPhotoEscPress);
     });
-    pictures.appendChild(elm);
-  };
-  return pictures;
+  return elm;
 };
 
-var renderMarkup = function (pictures) {
-  containerPictures.appendChild(pictures);  
+var renderMarkup = function (photos) {
+	var pictures = document.createDocumentFragment();
+	for (var i = 0; i < photos.length; i++) {
+		pictures.appendChild(generateMarkup(photos[i]));
+	};
+	containerPictures.appendChild(pictures); 
 };
 
 var onBigPhotoEscPress = function (evt) {
@@ -129,8 +128,7 @@ var closeBigPhoto = function () {
 };
 
 var photos = generatePictures (COUNT_PICTURES);
-var markup = generateMarkup (photos);
-renderMarkup (markup);
+renderMarkup (photos);
 
 bigPhotoCancelButton.addEventListener("click", function () {
   closeBigPhoto();
