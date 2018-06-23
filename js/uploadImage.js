@@ -25,8 +25,28 @@ var effectsRadio = uploadImage.querySelector (".effects__radio");
 var effects = uploadImage.querySelector(".img-upload__effects");
 var preview = uploadImage.querySelector(".img-upload__preview");
 
+var hashtagsInput = uploadImage.querySelector(".text__hashtags")
+var uploadImageSubmitButton = uploadImage.querySelector("#upload-submit");
+
 var currentEffect = document.querySelector("input:checked").id;
 var newEffect;
+
+var  checkHashtags = function () {
+  var hashtags = hashtagsInput.value.toLowerCase().split(" ");
+  if (hashtags.length > 5)
+    hashtagsInput.setCustomValidity("нельзя указать больше пяти хэш-тегов");
+  else 
+    hashtags.forEach(function (element) {
+    if (element.charAt(0) !== "#")
+      hashtagsInput.setCustomValidity ("хэш-тег должен начинаться с символа # (решётка)");
+    else if (element === "#")
+      hashtagsInput.setCustomValidity("хеш-тег не может состоять только из одной решётки");
+    else if (element.length > 20)
+      hashtagsInput.setCustomValidity ("максимальная длина одного хэш-тега 20 символов");
+    else if (hashtags.indexOf(element) !== hashtags.lastIndexOf(element))
+      hashtagsInput.setCustomValidity ("один и тот же хэш-тег не может быть использован дважды");
+  });
+}; 
 
 var onScalePinMouseUp = function () {
 };
@@ -75,7 +95,7 @@ var onMinusClick = function () {
 };
 
 var onUploadImageEscPress = function (evt) {
-  if (evt.keyCode === 27) {
+  if (evt.keyCode === 27 && !evt.target.classList.contains("img-upload__text")) {
     cancelUploadImage();
   };
 };
@@ -99,7 +119,18 @@ var openUploadImage = function () {
   });
   setEffect ();
   scalePin.addEventListener("mouseup", onScalePinMouseUp);
-};
+
+  hashtagsInput.addEventListener("change", function () {
+    hashtagsInput.setCustomValidity("");
+  });
+
+  uploadImageSubmitButton.addEventListener("click", function () {
+    hashtagsInput.setCustomValidity("");
+    if (hashtagsInput.value) {
+      checkHashtags ();
+    };
+  });
+}; 
 
 uploadFile.addEventListener("change", function () {
   openUploadImage();
@@ -108,4 +139,5 @@ uploadFile.addEventListener("change", function () {
 uploadCancel.addEventListener("click", function () {
   cancelUploadImage();
 });
+
 
