@@ -1,6 +1,7 @@
 "use strict";
 
-var DEFAULT_COEFFICIENT = 1;
+var DEFAULT_EFFECT_VALUE = 100;
+var DEFAULT_SCALE_VALUE = 100;
 var pictureScale = {
   MIN: 25,
   MAX: 100,
@@ -21,15 +22,18 @@ var scaleLevel = uploadImage.querySelector(".scale__level");
 var scalePin = uploadImage.querySelector(".scale__pin");
 var scaleValue = uploadImage.querySelector(".scale__value");
 
-var effectsRadio = uploadImage.querySelector (".effects__radio"); 
+var effectRadios = uploadImage.querySelectorAll("input[type=\"radio\"]");
 var effects = uploadImage.querySelector(".img-upload__effects");
 var preview = uploadImage.querySelector(".img-upload__preview");
+var checkedEffect = document.querySelector("input:checked");
 
 var hashtagsInput = uploadImage.querySelector(".text__hashtags")
 var uploadImageSubmitButton = uploadImage.querySelector("#upload-submit");
 
-var currentEffect = document.querySelector("input:checked").id;
-var newEffect;
+var startCoord;
+var currentPositionX;
+
+var currentEffect = checkedEffect.value;
 
 var isDuplicateValues = function(arr) {
   var sortedArray = arr.slice(0).sort();
@@ -101,33 +105,73 @@ var  checkHashtags = function () {
   hashtagsInput.setCustomValidity("");
 }; 
 
-var onScalePinMouseUp = function () {
+var setPinPosition = function (percent) {
+  scalePin.style.left = percent + "%";
+  scaleLevel.style.width = percent + "%";
 };
 
-var setEffect = function () {
-  var selectedEffect = document.querySelector("input:checked").value;
-  switch (selectedEffect) {
+var onChangeEffect = function (evt) {
+  var newEffect = evt.target.value;
+  hideSlider(newEffect);
+  setPinPosition (DEFAULT_EFFECT_VALUE);
+  preview.classList.replace("effect-" + currentEffect, "effect-" + newEffect);
+  setEffect (newEffect, DEFAULT_EFFECT_VALUE);
+  currentEffect = newEffect;
+};
+
+var setEffect = function (effect, persent) {
+  switch (effect) {
     case "chrome":
-      newEffect = "effects__preview--chrome";
+      preview.style.filter = "grayscale(" + persent/100 +")";
       break;
     case "sepia":
-      newEffect = "effects__preview--sepia";
+    preview.style.filter = "sepia(" + persent/100 +")";
       break;
     case "marvin":
-      newEffect = "effects__preview--marvin";
+      preview.style.filter = "invert(" + persent +"%)";
       break;
     case "phobos":
-      newEffect = "effects__preview--phobos";
+      preview.style.filter = "blur(" + persent/100 * 3 +"px)";
       break;
     case "heat":
-      newEffect = "effects__preview--heat";
+      preview.style.filter = "brightness(" + (1 + persent/100 * 2) +")";
       break;  
     default:
-      newEffect = "effects__preview--none";
+    preview.style.filter = "";
   };
-  preview.classList.replace(currentEffect, newEffect);
-  newEffect === "effects__preview--none" ? scale.classList.add("hidden") : scale.classList.remove("hidden");
-  currentEffect = newEffect;
+};
+
+var onScalePinMouseMove = function (mouseMoveEvt) {
+  mouseMoveEvt.preventDefault();
+  var shiftX = mouseMoveEvt.clientX - startCoord;
+  var newPositionX = currentPositionX + shiftX;
+
+  if (newPositionX >= 0 && newPositionX <= scaleLine.clientWidth) {
+    var positionInPercent = Math.floor((newPositionX * 100) / scaleLine.clientWidth);
+    setPinPosition(positionInPercent);
+    setEffect (currentEffect, positionInPercent);
+  };
+};
+
+var onScalePinMouseUp = function (mouseUpEvt) {
+  mouseUpEvt.preventDefault();
+
+  document.removeEventListener("mousemove", onScalePinMouseMove);
+  document.removeEventListener("mouseup", onScalePinMouseUp);
+};
+
+var onScalePinMouseDown = function (mouseDownEvt) {
+  mouseDownEvt.preventDefault();
+
+  startCoord = mouseDownEvt.clientX;
+  currentPositionX = scalePin.offsetLeft; 
+
+  document.addEventListener("mousemove", onScalePinMouseMove);
+  document.addEventListener("mouseup", onScalePinMouseUp);
+};
+
+var hideSlider = function (selectedEffect) {
+  selectedEffect === "none" ? scale.classList.add("hidden") : scale.classList.remove("hidden");
 };
 
 var resizeUploadImage = function (newSize) {
@@ -158,8 +202,11 @@ var cancelUploadImage = function () {
   document.removeEventListener("keydown", onUploadImageEscPress);
   buttonMinus.removeEventListener("click", onMinusClick);
   buttonPlus.removeEventListener("click", onPlusClick);
+  effectRadios.forEach(function(radio) {
+    radio.removeEventListener("change", onChangeEffect);
+  });
   uploadFile.value = "";
-  preview.style.transform = "scale(" + DEFAULT_COEFFICIENT + ")";
+  preview.style.transform = "scale(" + DEFAULT_SCALE_VALUE/100 + ")";
 };
 
 var openUploadImage = function () {
@@ -167,19 +214,23 @@ var openUploadImage = function () {
   document.addEventListener("keydown", onUploadImageEscPress);
   buttonMinus.addEventListener("click", onMinusClick);
   buttonPlus.addEventListener("click", onPlusClick);
-  effects.addEventListener("click", function () {
-    setEffect ();
+
+  effectRadios.forEach(function(radio) {
+    radio.addEventListener("change", onChangeEffect);
   });
-  setEffect ();
-  scalePin.addEventListener("mouseup", onScalePinMouseUp);
+
+  setEffect (checkedEffect.value, DEFAULT_EFFECT_VALUE);
+  hideSlider(checkedEffect.value);
+
+  scalePin.addEventListener("mousedown", onScalePinMouseDown);
 
   hashtagsInput.addEventListener("input", function () {
     hashtagsInput.setCustomValidity("");
-  });  
+  });
 
   uploadImageSubmitButton.addEventListener("click", function () {
-      checkHashtags ();
-  });
+    checkHashtags ();
+  }); 
 }; 
 
 uploadFile.addEventListener("change", function () {
