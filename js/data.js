@@ -1,6 +1,5 @@
 "use strict";
 (function() {
-  var COUNT_PICTURES = 25;
   var MIN_LIKE = 15;
   var MAX_LIKE = 200;
   var MAX_COMMENTS = 5;
@@ -60,5 +59,7 @@
     return photos;
   };
   
-  window.data = generatePictures (COUNT_PICTURES);
+  window.data = {
+    getData: generatePictures
+  };
 })();

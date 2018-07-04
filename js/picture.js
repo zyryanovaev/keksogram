@@ -2,6 +2,8 @@
 
 (function() {
 
+  var COUNT_PICTURES = 25;
+
   var containerPictures = document.querySelector(".pictures");
   var templatePictures =  document.querySelector("#picture").content.querySelector(".picture__link");
     
@@ -11,8 +13,7 @@
       elm.querySelector(".picture__stat--comments").textContent = photo.comments.length;
       elm.querySelector(".picture__stat--likes").textContent = photo.likes;
       elm.addEventListener("click", function () {
-        window.picture = photo;
-        window.preview.open();
+        window.preview.open(photo);
       });
     return elm;
   };
@@ -25,6 +26,6 @@
     containerPictures.appendChild(pictures); 
   };
  
-  var photos = window.data;
+  var photos = window.data.getData (COUNT_PICTURES);
   renderMarkup (photos);
 }());

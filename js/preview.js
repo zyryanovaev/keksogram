@@ -33,10 +33,8 @@
     document.removeEventListener("keydown", onBigPhotoEscPress);
   };
   
-  var openBigPhoto = function () {
-    var photo = window.picture;
-
-    bigPhoto.addEventListener("keydown", onBigPhotoEscPress);
+  var openBigPhoto = function (photo) {
+    document.addEventListener("keydown", onBigPhotoEscPress);
     bigPhotoCancelButton.addEventListener("click", function () {
       closeBigPhoto();
     }); 
@@ -54,6 +52,5 @@
   
   window.preview = {
     open : openBigPhoto,
-    close: closeBigPhoto,
   };
 }());
