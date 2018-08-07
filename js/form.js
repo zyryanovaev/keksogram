@@ -7,7 +7,9 @@
     MAX: 100,
     STEP: 25,
   };
-  
+
+  var uploadImageForm = document.querySelector(".img-upload__form");
+
   var uploadFile = document.querySelector("#upload-file");
   var uploadImage = document.querySelector(".img-upload__overlay");
   var uploadCancel = uploadImage.querySelector("#upload-cancel");
@@ -27,7 +29,7 @@
   var preview = uploadImage.querySelector(".img-upload__preview");
   var checkedEffect = document.querySelector("input:checked");
   
-  var hashtagsInput = uploadImage.querySelector(".text__hashtags")
+  var hashtagsInput = uploadImage.querySelector(".text__hashtags");
   var uploadImageSubmitButton = uploadImage.querySelector("#upload-submit");
   
   var startCoord;
@@ -227,10 +229,12 @@
     hashtagsInput.addEventListener("input", function () {
       hashtagsInput.setCustomValidity("");
     });
-  
-    uploadImageSubmitButton.addEventListener("click", function () {
+
+    uploadImageForm.addEventListener("submit", function(evt) {
       checkHashtags ();
-    }); 
+      window.backend.upload (new FormData (uploadImageForm));
+      evt.preventDefault ();
+    });
   }; 
   
   uploadFile.addEventListener("change", function () {
@@ -240,6 +244,10 @@
   uploadCancel.addEventListener("click", function () {
     cancelUploadImage();
   });
+
+  window.form = {
+    hide: cancelUploadImage,
+  };
 }());
 
 

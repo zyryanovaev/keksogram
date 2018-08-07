@@ -2,8 +2,6 @@
 
 (function() {
 
-  var COUNT_PICTURES = 25;
-
   var containerPictures = document.querySelector(".pictures");
   var templatePictures =  document.querySelector("#picture").content.querySelector(".picture__link");
     
@@ -25,7 +23,8 @@
     };
     containerPictures.appendChild(pictures); 
   };
- 
-  var photos = window.data.getData (COUNT_PICTURES);
-  renderMarkup (photos);
+  window.backend.download();
+  window.picture = {
+    render: renderMarkup
+  };
 }());
