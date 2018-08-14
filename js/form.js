@@ -49,7 +49,7 @@
     return false;
   };
   
-  var  checkHashtags = function () {
+  var  checkHashtags = function() {
     var hashtagsValue = hashtagsInput.value.trim().toLowerCase();
   
     if (hashtagsValue.length === 0) {
@@ -107,12 +107,12 @@
     hashtagsInput.setCustomValidity("");
   }; 
   
-  var setPinPosition = function (percent) {
+  var setPinPosition = function(percent) {
     scalePin.style.left = percent + "%";
     scaleLevel.style.width = percent + "%";
   };
   
-  var onChangeEffect = function (evt) {
+  var onChangeEffect = function(evt) {
     var newEffect = evt.target.value;
     hideSlider(newEffect);
     setPinPosition (DEFAULT_EFFECT_VALUE);
@@ -121,7 +121,7 @@
     currentEffect = newEffect;
   };
   
-  var setEffect = function (effect, persent) {
+  var setEffect = function(effect, persent) {
     switch (effect) {
       case "chrome":
         preview.style.filter = "grayscale(" + persent/100 +")";
@@ -143,7 +143,7 @@
     };
   };
   
-  var onScalePinMouseMove = function (mouseMoveEvt) {
+  var onScalePinMouseMove = function(mouseMoveEvt) {
     mouseMoveEvt.preventDefault();
     var shiftX = mouseMoveEvt.clientX - startCoord;
     var newPositionX = currentPositionX + shiftX;
@@ -155,14 +155,14 @@
     };
   };
   
-  var onScalePinMouseUp = function (mouseUpEvt) {
+  var onScalePinMouseUp = function(mouseUpEvt) {
     mouseUpEvt.preventDefault();
   
     document.removeEventListener("mousemove", onScalePinMouseMove);
     document.removeEventListener("mouseup", onScalePinMouseUp);
   };
   
-  var onScalePinMouseDown = function (mouseDownEvt) {
+  var onScalePinMouseDown = function(mouseDownEvt) {
     mouseDownEvt.preventDefault();
   
     startCoord = mouseDownEvt.clientX;
@@ -172,34 +172,34 @@
     document.addEventListener("mouseup", onScalePinMouseUp);
   };
   
-  var hideSlider = function (selectedEffect) {
+  var hideSlider = function(selectedEffect) {
     selectedEffect === "none" ? scale.classList.add("hidden") : scale.classList.remove("hidden");
   };
   
-  var resizeUploadImage = function (newSize) {
+  var resizeUploadImage = function(newSize) {
     resizeValue.value = newSize + "%";
     preview.style.transform = "scale(" + newSize/100 + ")";
   };
   
-  var onPlusClick = function () {
+  var onPlusClick = function() {
     var size = parseInt(resizeValue.value);
     if (size < pictureScale.MAX)
       resizeUploadImage(size + pictureScale.STEP);
   };
   
-  var onMinusClick = function () {
+  var onMinusClick = function() {
     var size = parseInt(resizeValue.value);
     if (size > pictureScale.MIN)
       resizeUploadImage(size - pictureScale.STEP);
   };
   
-  var onUploadImageEscPress = function (evt) {
+  var onUploadImageEscPress = function(evt) {
     if (evt.keyCode === 27 && !evt.target.classList.contains("img-upload__text")) {
       cancelUploadImage();
     };
   };
   
-  var cancelUploadImage = function () {
+  var cancelUploadImage = function() {
     uploadImage.classList.add("hidden");
     document.removeEventListener("keydown", onUploadImageEscPress);
     buttonMinus.removeEventListener("click", onMinusClick);
@@ -211,7 +211,7 @@
     preview.style.transform = "scale(" + DEFAULT_SCALE_VALUE/100 + ")";
   };
   
-  var openUploadImage = function () {
+  var openUploadImage = function() {
     uploadImage.classList.remove("hidden");
     document.addEventListener("keydown", onUploadImageEscPress);
     buttonMinus.addEventListener("click", onMinusClick);
@@ -226,7 +226,7 @@
   
     scalePin.addEventListener("mousedown", onScalePinMouseDown);
   
-    hashtagsInput.addEventListener("input", function () {
+    hashtagsInput.addEventListener("input", function() {
       hashtagsInput.setCustomValidity("");
     });
 
@@ -237,11 +237,11 @@
     });
   }; 
   
-  uploadFile.addEventListener("change", function () {
+  uploadFile.addEventListener("change", function() {
     openUploadImage();
   });
   
-  uploadCancel.addEventListener("click", function () {
+  uploadCancel.addEventListener("click", function() {
     cancelUploadImage();
   });
 

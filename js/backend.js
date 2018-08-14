@@ -3,7 +3,7 @@
   var URL_FOR_DOWNLOAD_DATA = "https://js.dump.academy/kekstagram/data";
   var URL_FOR_UPLOAD_DATA = "https://js.dump.academy/kekstagram"
 
-  var checkStatus = function (xhr, onLoad, onError) {
+  var checkStatus = function(xhr, onLoad, onError) {
     switch (xhr.status) {
       case 200:
         onLoad (xhr.response);
@@ -18,8 +18,8 @@
     var xhr = new XMLHttpRequest ();
     xhr.responseType = "json";
 
-    xhr.addEventListener("load", function () {
-      checkStatus(xhr, window.picture.render, window.error.show);
+    xhr.addEventListener("load", function() {
+      checkStatus(xhr, window.filter.render, window.error.show);
     });
     xhr.open ("GET", URL_FOR_DOWNLOAD_DATA);
     xhr.send ();
@@ -29,7 +29,7 @@
     var xhr = new XMLHttpRequest ();
     xhr.responseType = "json";
 
-    xhr.addEventListener("load", function () {
+    xhr.addEventListener("load", function() {
         checkStatus(xhr, window.form.hide, window.error.show);    
     });
     xhr.open ("POST", URL_FOR_UPLOAD_DATA);
